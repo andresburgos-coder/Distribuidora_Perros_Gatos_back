@@ -17,7 +17,7 @@ const pool = new mssql.ConnectionPool(config);
 
 pool.connect().then(() => {
   logger.info('Connected to MSSQL');
-}).catch((err) => {
+}).catch((err: any) => {
   logger.error('Database Connection Failed! Bad Config: ', err);
 });
 
