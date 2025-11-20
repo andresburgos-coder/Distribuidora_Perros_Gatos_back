@@ -1,27 +1,23 @@
-# Node.js Worker Service Dockerfile
-FROM node:18-alpine
+# Use an official Node.js runtime as a parent image
+FROM node:16-alpine
 
-WORKDIR /app/worker
+# Set the working directory to /app
+WORKDIR /app
 
-# Copy package files
+# Copy package.json and package-lock.json to the working directory
 COPY backend/worker/package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install any needed packages
+RUN npm install
 
-# Copy TypeScript config and source
-COPY backend/worker/tsconfig.json .
-COPY backend/worker/src ./src
+# Copy the rest of the application code to the working directory
+COPY backend/worker/ .
 
-# Build TypeScript
+# Build the TypeScript code
 RUN npm run build
 
-# Expose port for health checks
+# Your app binds to port 3001 so you'll use the EXPOSE instruction to have it mapped by the docker daemon
 EXPOSE 3001
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3001/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
-
-# Run compiled JavaScript
-CMD ["npm", "start"]
+# Define the command to run your app
+CMD [ "npm", "start" ]
