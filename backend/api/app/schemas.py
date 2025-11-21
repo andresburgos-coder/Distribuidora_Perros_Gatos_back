@@ -206,13 +206,15 @@ class CarruselImagenUpdate(BaseModel):
 class CarruselImagenResponse(BaseModel):
     id: int
     orden: int
-    ruta_imagen: str
+    ruta_imagen: str = Field(..., alias="imagen_url")
     link_url: Optional[str]
     activo: bool
-    fecha_creacion: datetime
-    
+    fecha_creacion: datetime = Field(..., alias="created_at")
+
     class Config:
+        # Allow reading from ORM attributes and populate by field name when needed
         from_attributes = True
+        allow_population_by_field_name = True
 
 
 # User Schemas
