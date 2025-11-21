@@ -2,7 +2,7 @@
 Authentication router: Register, Login, Logout, Token refresh
 Handles HU_REGISTER_USER and HU_LOGIN_USER
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Request
 from sqlalchemy.orm import Session
 from app.schemas import RegisterRequest, LoginRequest, TokenResponse, VerificationCodeRequest
 from app.database import get_db

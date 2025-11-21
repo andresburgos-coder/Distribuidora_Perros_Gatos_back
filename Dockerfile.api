@@ -1,20 +1,42 @@
-# Use an official Python runtime as a parent image
+# Usa una imagen oficial de Python como imagen base
 FROM python:3.9-slim
 
-# Set the working directory to /app
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copy the requirements file to the working directory
+# Instala el driver ODBC y las herramientas de MS SQL
+# 1. Actualiza los índices de paquetes y asegura que curl, gnupg y otras dependencias estén instaladas.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        gnupg \
+        ca-certificates \
+        # Los paquetes básicos para la instalación (wget, etc.)
+        && \
+    # 2. Descarga la clave de Microsoft y la guarda en keyrings usando el método [signed-by].
+    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /usr/share/keyrings/microsoft.gpg > /dev/null && \
+    # 3. Agrega la lista del repositorio de Microsoft para Debian 11 (Bullseye), usando signed-by.
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/debian/11/prod bullseye main" | tee /etc/apt/sources.list.d/mssql-release.list > /dev/null && \
+    # 4. Actualiza APT para leer el nuevo repositorio.
+    apt-get update && \
+    # 5. Instala los paquetes msodbcsql17 y mssql-tools.
+    ACCEPT_EULA=Y apt-get install -y --no-install-recommends \
+        msodbcsql17 \
+        mssql-tools \
+    # 6. Limpia el cache
+    && rm -rf /var/lib/apt/lists/*
+
+# Copia el archivo requirements.txt al directorio de trabajo
 COPY backend/api/requirements.txt .
 
-# Install any needed packages specified in requirements.txt
+# Instala los paquetes de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code to the working directory
+# Copia el resto del código de la aplicación
 COPY backend/api/ .
 
-# Your app binds to port 8000 so you'll use the EXPOSE instruction to have it mapped by the docker daemon
+# El contenedor expone el puerto 8000
 EXPOSE 8000
 
-# Define the command to run your app
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Define el comando para ejecutar la app
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -16,7 +16,7 @@ class RegisterRequest(BaseModel):
     nombre_completo: str = Field(..., min_length=3, max_length=100)
     email: EmailStr
     password: str = Field(..., min_length=10)
-    cedula: str = Field(..., regex=r"^\d{6,12}$")
+    cedula: str = Field(..., pattern=r"^\d{6,12}$")
     
     @field_validator('password')
     def password_strength(cls, v):
@@ -37,7 +37,7 @@ class TokenResponse(BaseModel):
 
 class VerificationCodeRequest(BaseModel):
     email: EmailStr
-    code: str = Field(..., regex=r"^\d{6}$")
+    code: str = Field(..., pattern=r"^\d{6}$")
 
 
 # Category Schemas
@@ -161,12 +161,12 @@ class CartResponse(BaseModel):
 # Order Schemas
 class PedidoCreate(BaseModel):
     direccion_entrega: str = Field(..., min_length=10)
-    telefono_contacto: str = Field(..., regex=r"^\d{7,15}$")
+    telefono_contacto: str = Field(..., pattern=r"^\d{7,15}$")
     nota_especial: Optional[str] = Field(None, max_length=500)
 
 
 class PedidoEstadoUpdate(BaseModel):
-    estado: str = Field(..., regex="^(Pendiente|Enviado|Entregado|Cancelado)$")
+    estado: str = Field(..., pattern="^(Pendiente|Enviado|Entregado|Cancelado)$")
     nota: Optional[str] = Field(None, max_length=300)
 
 
