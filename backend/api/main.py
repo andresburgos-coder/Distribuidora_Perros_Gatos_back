@@ -11,6 +11,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from app.config import settings
 from app.database import init_db, close_db
+from app.middleware.error_handler import setup_error_handlers
 from app.routers import (
     auth_router,
     categories_router,
@@ -30,23 +31,24 @@ async def lifespan(app: FastAPI):
     Handles database initialization and cleanup
     """
     # Startup
-    print("🚀 Starting Distribuidora Perros y Gatos Backend API")
+    print("Starting Distribuidora Perros y Gatos Backend API")
     try:
         init_db()
-        print("✓ Database initialized successfully")
+        print("Database initialized successfully")
     except Exception as e:
-        print(f"✗ Error initializing database: {str(e)}")
-        raise
+        print(f"Warning: Could not initialize database: {str(e)}")
+        print("Application will continue without database connection")
+        # Don't raise - allow app to start for development
     
     yield
     
     # Shutdown
-    print("🛑 Shutting down API")
+    print("Shutting down API")
     try:
         close_db()
-        print("✓ Database connections closed")
+        print("Database connections closed")
     except Exception as e:
-        print(f"✗ Error closing database: {str(e)}")
+        print(f"Error closing database: {str(e)}")
 
 
 # Crear aplicación FastAPI
