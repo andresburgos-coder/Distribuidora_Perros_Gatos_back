@@ -1,0 +1,87 @@
+Aquí te explico cómo puedes ejecutar el proyecto `Distribuidora_Perros_Gatos_back` localmente, basándome en el archivo `README.md`:
+
+---
+
+### Opción 1: Ejecutar con Docker Compose (Recomendado para una configuración rápida)
+
+Este método construirá y arrancará todos los servicios (backend FastAPI, worker Node.js, base de datos SQL Server y broker de mensajes RabbitMQ) con un solo comando.
+
+1.  **Requisitos previos**: Asegúrate de tener Docker y Docker Compose instalados en tu sistema.
+2.  **Navega a la raíz del proyecto**:
+    ```bash
+    cd c:\Users\USUARIO\Documents\Distribuidora_Perros_Gatos_back
+    ```
+3.  **Construye y arranca todos los servicios**:
+    ```bash
+    docker-compose up -d
+    ```
+    *   La bandera `-d` ejecuta los servicios en modo "detached" (en segundo plano).
+    *   La base de datos se inicializará automáticamente.
+    *   La API de FastAPI estará disponible en `http://localhost:8000`.
+    *   La interfaz de usuario de gestión de RabbitMQ estará en `http://localhost:15672` (credenciales por defecto: `guest`/`guest`).
+
+Para detener los servicios, ejecuta:
+```bash
+docker-compose down
+```
+
+---
+
+### Opción 2: Configuración para Desarrollo Local (Para desarrollo de servicios individuales)
+
+Si prefieres ejecutar los servicios directamente en tu máquina para desarrollo, sigue estos pasos para cada componente:
+
+#### Backend (FastAPI - Python)
+
+1.  **Requisitos previos**: Python 3.11+ instalado. También necesitarás una instancia de SQL Server en ejecución y una instancia de RabbitMQ, que puedes configurar manualmente o ejecutar a través de Docker Compose (`docker-compose up -d sqlserver rabbitmq`).
+2.  **Navega al directorio de la API del backend**:
+    ```bash
+    cd backend/api
+    ```
+3.  **Crea y activa un entorno virtual**:
+    ```bash
+    python -m venv venv
+    .\venv\Scripts\activate  # En Windows
+    # O: source venv/bin/activate # En Linux/macOS
+    ```
+4.  **Instala las dependencias**:
+    ```bash
+    pip install -r requirements.txt
+    ```
+5.  **Configura las variables de entorno**:
+    ```bash
+    copy .env.example .env
+    ```
+    Luego, abre el archivo `.env` recién creado y edítalo con la configuración de tu base de datos (SQL Server) y la conexión a RabbitMQ.
+6.  **Ejecuta migraciones**: El esquema se creará automáticamente a través de SQLAlchemy al iniciar.
+7.  **Arranca el servidor FastAPI**:
+    ```bash
+    uvicorn main:app --reload --port 8000
+    ```
+    La documentación de la API estará disponible en `http://localhost:8000/docs`.
+
+#### Worker (Node.js - TypeScript)
+
+1.  **Requisitos previos**: Node.js 18+ instalado. También necesitarás una instancia de RabbitMQ en ejecución.
+2.  **Navega al directorio del worker**:
+    ```bash
+    cd backend/worker
+    ```
+3.  **Instala las dependencias**:
+    ```bash
+    npm install
+    ```
+4.  **Configura las variables de entorno**:
+    ```bash
+    copy .env.example .env
+    ```
+    Luego, abre el archivo `.env` recién creado y edítalo con la configuración de tu conexión a RabbitMQ.
+5.  **Arranca el worker en modo desarrollo**:
+    ```bash
+    npm run dev
+    ```
+    Para construir y arrancar en producción:
+    ```bash
+    npm run build
+    npm start
+    ```
