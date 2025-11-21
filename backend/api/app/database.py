@@ -39,11 +39,16 @@ def get_db() -> Generator[Session, None, None]:
 def init_db():
     """Initialize database by creating all tables"""
     try:
-        Base.metadata.create_all(bind=engine)
-        logger.info("Database initialized successfully")
+        # Only create tables if there are models registered
+        if Base.metadata.tables:
+            Base.metadata.create_all(bind=engine)
+            logger.info("Database initialized successfully")
+        else:
+            logger.info("No database models found, skipping table creation")
     except Exception as e:
-        logger.error(f"Error initializing database: {str(e)}")
-        raise
+        logger.warning(f"Could not initialize database: {str(e)}")
+        logger.warning("Application will continue without database connection")
+        # Don't raise - allow app to start without DB for development
 
 
 def close_db():
