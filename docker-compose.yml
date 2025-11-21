@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   api:
@@ -9,13 +9,16 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_healthy
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
-      - DB_USER=your_db_user
-      - DB_PASSWORD=your_db_password
-      - DB_HOST=your_db_host
-      - DB_NAME=your_db_name
+      - DB_USER=SA
+      - DB_PASSWORD=yourStrongPassword123#
+      - DB_HOST=sqlserver
+      - DB_NAME=distribuidora_db
       - DB_ENCRYPT=false
       - DB_TRUST_SERVER_CERTIFICATE=true
     networks:
@@ -27,17 +30,20 @@ services:
       dockerfile: Dockerfile.worker
     container_name: distribuidora-worker
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      sqlserver:
+        condition: service_healthy
     environment:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
       - SMTP_HOST=your_smtp_host
       - SMTP_PORT=587
       - SMTP_USER=your_smtp_user
       - SMTP_PASS=your_smtp_password
-      - DB_USER=your_db_user
-      - DB_PASSWORD=your_db_password
-      - DB_HOST=your_db_host
-      - DB_NAME=your_db_name
+      - DB_USER=SA
+      - DB_PASSWORD=yourStrongPassword123#
+      - DB_HOST=sqlserver
+      - DB_NAME=distribuidora_db
       - DB_ENCRYPT=false
       - DB_TRUST_SERVER_CERTIFICATE=true
     networks:
@@ -49,8 +55,35 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
     networks:
       - distribuidora-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=yourStrongPassword123#
+      - MSSQL_PID=Developer
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "SA", "-P", "yourStrongPassword123#", "-Q", "SELECT 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - distribuidora-network
+
+volumes:
+  sqlserver_data:
 
 networks:
   distribuidora-network:
