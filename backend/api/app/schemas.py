@@ -73,7 +73,65 @@ class StandardResponse(BaseModel):
     message: str
 
 
-# Category Schemas
+# Category Schemas (HU_MANAGE_CATEGORIES)
+class CategoriaCreateRequest(BaseModel):
+    """Request schema for creating a category - EXACT as per HU specification"""
+    nombre: str = Field(..., min_length=2, max_length=100)
+
+
+class SubcategoriaCreateRequest(BaseModel):
+    """Request schema for creating a subcategory - EXACT as per HU specification"""
+    categoriaId: str = Field(..., description="Category ID (can be GUID or bigint as string)")
+    nombre: str = Field(..., min_length=2, max_length=100)
+
+
+class CategoriaUpdateRequest(BaseModel):
+    """Request schema for updating a category - EXACT as per HU specification"""
+    nombre: str = Field(..., min_length=2, max_length=100)
+
+
+class SubcategoriaUpdateRequest(BaseModel):
+    """Request schema for updating a subcategory - EXACT as per HU specification"""
+    nombre: str = Field(..., min_length=2, max_length=100)
+
+
+# Response schemas
+class SubcategoriaResponse(BaseModel):
+    id: int
+    categoria_id: int
+    nombre: str
+    created_at: datetime
+    updated_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+
+class CategoriaResponse(BaseModel):
+    id: int
+    nombre: str
+    created_at: datetime
+    updated_at: datetime
+    subcategorias: List[SubcategoriaResponse] = []
+    
+    class Config:
+        from_attributes = True
+
+
+# Standard response schemas (as per HU specification)
+class SuccessResponse(BaseModel):
+    """Standard success response - EXACT as per HU specification"""
+    status: str = "success"
+    message: str
+
+
+class ErrorResponse(BaseModel):
+    """Standard error response - EXACT as per HU specification"""
+    status: str = "error"
+    message: str
+
+
+# Legacy schemas (keeping for backward compatibility)
 class SubcategoriaCreate(BaseModel):
     nombre: str = Field(..., min_length=2, max_length=100)
 
@@ -85,23 +143,6 @@ class CategoriaCreate(BaseModel):
 
 class CategoriaUpdate(BaseModel):
     nombre: Optional[str] = Field(None, min_length=2, max_length=100)
-
-
-class SubcategoriaResponse(BaseModel):
-    id: int
-    nombre: str
-    
-    class Config:
-        from_attributes = True
-
-
-class CategoriaResponse(BaseModel):
-    id: int
-    nombre: str
-    subcategorias: List[SubcategoriaResponse] = []
-    
-    class Config:
-        from_attributes = True
 
 
 # Product Schemas

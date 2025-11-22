@@ -97,8 +97,11 @@ BEGIN
         fecha_actualizacion DATETIME DEFAULT GETUTCDATE(),
         CONSTRAINT fk_producto_categoria FOREIGN KEY (categoria_id) 
             REFERENCES Categorias(id),
+        -- Si la política de negocio lo permite, habilitar ON DELETE CASCADE para que
+        -- al eliminar una subcategoría también se eliminen sus productos asociados.
+        -- Esto evita violaciones de FK cuando la aplicación borra subcategorías.
         CONSTRAINT fk_producto_subcategoria FOREIGN KEY (subcategoria_id) 
-            REFERENCES Subcategorias(id)
+            REFERENCES Subcategorias(id) ON DELETE CASCADE
     );
     
     CREATE INDEX idx_producto_categoria ON Productos(categoria_id);
