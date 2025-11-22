@@ -4,6 +4,7 @@ import { consumeEmailMessages } from './consumers/email.consumer';
 import { consumeInventoryMessages } from './consumers/inventory.consumer';
 import { consumeOrderMessages } from './consumers/order.consumer';
 import { consumeUserRegistrationMessages } from './consumers/user.consumer';
+import { consumeProductCreateMessages } from './consumers/product.consumer';
 import logger from './utils/logger';
 
 const consumeMessages = async () => {
@@ -15,6 +16,7 @@ const consumeMessages = async () => {
     consumeOrderMessages(channel);
     consumeInventoryMessages(channel);
     consumeUserRegistrationMessages(channel);
+    consumeProductCreateMessages(channel);
     
   } catch (error) {
     logger.error('Error connecting to RabbitMQ:', error);

@@ -5,13 +5,13 @@
 USE master;
 GO
 
-IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'DistribuidoraDB')
+IF NOT EXISTS (SELECT 1 FROM sys.databases WHERE name = 'distribuidora_db')
 BEGIN
-    CREATE DATABASE DistribuidoraDB;
+    CREATE DATABASE distribuidora_db;
 END
 GO
 
-USE DistribuidoraDB;
+USE distribuidora_db;
 GO
 
 -- ============================================================
@@ -46,7 +46,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Categorias')
 BEGIN
     CREATE TABLE Categorias (
         id INT PRIMARY KEY IDENTITY(1,1),
-        nombre NVARCHAR(100) NOT NULL UNIQUE COLLATE SQL_Latin1_General_CP1_CI_AS,
+        nombre NVARCHAR(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL UNIQUE,
         descripcion NVARCHAR(500) NULL,
         activo BIT DEFAULT 1,
         fecha_creacion DATETIME DEFAULT GETUTCDATE(),
@@ -60,12 +60,12 @@ GO
 -- ============================================================
 -- 3. SUBCATEGORIAS Table
 -- ============================================================
-IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Subcategorias')
+    IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name = 'Subcategorias')
 BEGIN
     CREATE TABLE Subcategorias (
         id INT PRIMARY KEY IDENTITY(1,1),
         categoria_id INT NOT NULL,
-        nombre NVARCHAR(100) NOT NULL COLLATE SQL_Latin1_General_CP1_CI_AS,
+        nombre NVARCHAR(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
         descripcion NVARCHAR(500) NULL,
         activo BIT DEFAULT 1,
         fecha_creacion DATETIME DEFAULT GETUTCDATE(),
@@ -90,7 +90,6 @@ BEGIN
         precio DECIMAL(10, 2) NOT NULL CHECK (precio > 0),
         peso_gramos INT NOT NULL CHECK (peso_gramos > 0),
         cantidad_disponible INT DEFAULT 0 CHECK (cantidad_disponible >= 0),
-        sku NVARCHAR(50) NULL UNIQUE,
         categoria_id INT NOT NULL,
         subcategoria_id INT NOT NULL,
         activo BIT DEFAULT 1,
@@ -105,7 +104,6 @@ BEGIN
     CREATE INDEX idx_producto_categoria ON Productos(categoria_id);
     CREATE INDEX idx_producto_subcategoria ON Productos(subcategoria_id);
     CREATE INDEX idx_producto_nombre ON Productos(nombre);
-    CREATE INDEX idx_producto_sku ON Productos(sku);
 END
 GO
 
@@ -346,7 +344,7 @@ SELECT
     p.precio,
     p.peso_gramos,
     p.cantidad_disponible,
-    p.sku,
+    -- sku removed from product view
     c.nombre AS categoria_nombre,
     sc.nombre AS subcategoria_nombre,
     p.activo,

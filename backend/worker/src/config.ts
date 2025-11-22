@@ -10,6 +10,7 @@ export const config = {
       processOrder: 'process_order_queue',
       updateInventory: 'update_inventory_queue',
       userRegistration: 'user_registration_queue',
+      productosCrear: process.env.RABBITMQ_QUEUE_PRODUCTOS_CREAR || 'productos.crear',
     },
   },
   smtp: {

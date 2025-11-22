@@ -1,7 +1,7 @@
 -- Seeder: Initial Categories and Subcategories
 -- Purpose: Populate the database with initial data for Perros and Gatos
 
-USE DistribuidoraDB;
+USE distribuidora_db;
 GO
 
 BEGIN TRANSACTION;
