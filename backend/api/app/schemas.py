@@ -9,23 +9,44 @@ from datetime import datetime
 # Auth Schemas
 class LoginRequest(BaseModel):
     email: EmailStr
-    password: str = Field(..., min_length=10)
+    password: str
+    session_id: Optional[str] = None
+
+
+class CartMergeInfo(BaseModel):
+    merged: bool
+    items_adjusted: List = []
+
+
+class LoginSuccessResponse(BaseModel):
+    status: str
+    message: str
+    access_token: str
+    cart_merge: Optional[CartMergeInfo] = None
+
 
 
 class RegisterRequest(BaseModel):
-    nombre_completo: str = Field(..., min_length=3, max_length=100)
+    """Request schema for user registration - matches HU specifications exactly"""
     email: EmailStr
     password: str = Field(..., min_length=10)
-    cedula: str = Field(..., pattern=r"^\d{6,12}$")
+    nombre: str = Field(..., min_length=1, max_length=100)  # Maps to nombre_completo in DB
+    cedula: Optional[str] = Field(None, pattern=r"^\d{6,12}$")
+    telefono: Optional[str] = Field(None, max_length=20)
+    direccion_envio: Optional[str] = Field(None, max_length=500)
+    preferencia_mascotas: Optional[str] = Field(None, pattern="^(Perros|Gatos|Ambos|Ninguno)$")
     
     @field_validator('password')
     def password_strength(cls, v):
+        """Validate password according to HU specifications - exact error message"""
+        if len(v) < 10:
+            raise ValueError('La contraseña debe tener al menos 10 caracteres, incluir una mayúscula, un número y un carácter especial.')
         if not any(c.isupper() for c in v):
-            raise ValueError('Password must contain uppercase letter')
+            raise ValueError('La contraseña debe tener al menos 10 caracteres, incluir una mayúscula, un número y un carácter especial.')
         if not any(c.isdigit() for c in v):
-            raise ValueError('Password must contain digit')
+            raise ValueError('La contraseña debe tener al menos 10 caracteres, incluir una mayúscula, un número y un carácter especial.')
         if not any(c in '!@#$%^&*()_+-=[]{}|;:,.<>?' for c in v):
-            raise ValueError('Password must contain special character')
+            raise ValueError('La contraseña debe tener al menos 10 caracteres, incluir una mayúscula, un número y un carácter especial.')
         return v
 
 
@@ -36,8 +57,20 @@ class TokenResponse(BaseModel):
 
 
 class VerificationCodeRequest(BaseModel):
+    """Request schema for email verification"""
     email: EmailStr
     code: str = Field(..., pattern=r"^\d{6}$")
+
+
+class ResendCodeRequest(BaseModel):
+    """Request schema for resending verification code"""
+    email: EmailStr
+
+
+class StandardResponse(BaseModel):
+    """Standard response schema matching HU specifications exactly"""
+    status: str  # "success" or "error"
+    message: str
 
 
 # Category Schemas

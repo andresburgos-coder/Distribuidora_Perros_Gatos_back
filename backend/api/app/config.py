@@ -64,6 +64,12 @@ class Settings(BaseSettings):
     MAX_LOGIN_ATTEMPTS: int = 5
     LOGIN_LOCKOUT_DURATION_MINUTES: int = 15
     
+    # Email Verification
+    VERIFICATION_CODE_EXPIRE_MINUTES: int = 10
+    MAX_VERIFICATION_ATTEMPTS: int = 5
+    MAX_RESEND_CODE_ATTEMPTS: int = 3
+    RESEND_CODE_WINDOW_MINUTES: int = 60
+    
     class Config:
         env_file = ".env"
         case_sensitive = True
