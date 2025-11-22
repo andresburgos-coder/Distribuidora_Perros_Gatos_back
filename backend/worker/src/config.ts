@@ -2,14 +2,29 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Build RabbitMQ URL from environment variables if explicit RABBITMQ_URL is not provided
+const rabbitUser = process.env.RABBITMQ_USER || process.env.RABBITMQ_USERNAME || 'guest';
+const rabbitPass = process.env.RABBITMQ_PASSWORD || process.env.RABBITMQ_PASS || 'guest';
+const rabbitHost = process.env.RABBITMQ_HOST || 'localhost';
+const rabbitPort = process.env.RABBITMQ_PORT || '5672';
+
+const defaultRabbitUrl = `amqp://${rabbitUser}:${rabbitPass}@${rabbitHost}:${rabbitPort}/`;
+
 export const config = {
   rabbitMQ: {
-    url: process.env.RABBITMQ_URL || 'amqp://localhost',
+    url: process.env.RABBITMQ_URL || defaultRabbitUrl,
     queues: {
       sendEmail: 'send_email_queue',
       processOrder: 'process_order_queue',
       updateInventory: 'update_inventory_queue',
       userRegistration: 'user_registration_queue',
+      // HU_MANAGE_CATEGORIES queues - EXACT as per specification
+      crearCategoria: 'categorias.crear',
+      actualizarCategoria: 'categorias.actualizar',
+      eliminarCategoria: 'categorias.eliminar',
+      crearSubcategoria: 'subcategorias.crear',
+      actualizarSubcategoria: 'subcategorias.actualizar',
+      eliminarSubcategoria: 'subcategorias.eliminar',
     },
   },
   smtp: {

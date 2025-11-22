@@ -1,0 +1,50 @@
+==========================================
+COMANDOS cURL RÁPIDOS - GESTIÓN DE CATEGORÍAS
+Base URL: http://localhost:8000
+==========================================
+
+1. CREAR CATEGORÍA
+-------------------
+curl -X POST "http://localhost:8000/api/admin/categorias" -H "Content-Type: application/json" -d "{\"nombre\": \"Perros\"}"
+
+2. CREAR SUBCATEGORÍA
+----------------------
+curl -X POST "http://localhost:8000/api/admin/subcategorias" -H "Content-Type: application/json" -d "{\"categoriaId\": \"1\", \"nombre\": \"Alimentos\"}"
+
+3. LISTAR CATEGORÍAS
+---------------------
+curl -X GET "http://localhost:8000/api/admin/categorias" -H "Content-Type: application/json"
+
+4. ACTUALIZAR CATEGORÍA
+------------------------
+curl -X PUT "http://localhost:8000/api/admin/categorias/1" -H "Content-Type: application/json" -d "{\"nombre\": \"Perros y Gatos\"}"
+
+5. ACTUALIZAR SUBCATEGORÍA
+---------------------------
+curl -X PUT "http://localhost:8000/api/admin/subcategorias/1" -H "Content-Type: application/json" -d "{\"nombre\": \"Alimentos Premium\"}"
+
+==========================================
+CASOS DE ERROR (para probar validaciones)
+==========================================
+
+6. ERROR: Nombre muy corto
+--------------------------
+curl -X POST "http://localhost:8000/api/admin/categorias" -H "Content-Type: application/json" -d "{\"nombre\": \"A\"}"
+
+7. ERROR: Campo vacío
+---------------------
+curl -X POST "http://localhost:8000/api/admin/categorias" -H "Content-Type: application/json" -d "{\"nombre\": \"\"}"
+
+8. ERROR: Categoría inexistente
+--------------------------------
+curl -X POST "http://localhost:8000/api/admin/subcategorias" -H "Content-Type: application/json" -d "{\"categoriaId\": \"999\", \"nombre\": \"Algo\"}"
+
+==========================================
+NOTAS IMPORTANTES
+==========================================
+
+- Los mensajes se procesan de forma asíncrona (FastAPI → RabbitMQ → Worker → SQL Server)
+- Las validaciones de duplicados se hacen en el Worker
+- Revisa los logs del worker: docker logs distribuidora-worker
+- Verifica RabbitMQ: http://localhost:15672 (guest/guest)
+
