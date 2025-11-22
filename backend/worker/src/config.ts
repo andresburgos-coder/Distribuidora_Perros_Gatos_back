@@ -12,7 +12,8 @@ export const config = {
       sendEmail: 'send_email_queue',  // Mantenido para compatibilidad
       processOrder: 'process_order_queue',
       updateInventory: 'update_inventory_queue',
-      userRegistration: 'user_registration_queue'
+      userRegistration: 'user_registration_queue',
+      productosCrear: process.env.RABBITMQ_QUEUE_PRODUCTOS_CREAR || 'productos.crear',
     },
   },
   smtp: {

@@ -9,7 +9,10 @@ const config = {
   port: parseInt(process.env.DB_PORT || '1433', 10),
   options: {
     encrypt: process.env.DB_ENCRYPT === 'true',
-    trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE === 'true',
+    // In containerized local/dev environments using self-signed certs it's
+    // common to trust the server certificate. Default to true unless
+    // explicitly set to 'false'.
+    trustServerCertificate: process.env.DB_TRUST_SERVER_CERTIFICATE === 'false' ? false : true,
   },
 };
 

@@ -32,10 +32,6 @@ class ValidatorUtils:
         """Validate quantity (must be non-negative)"""
         return cantidad >= 0
     
-    @staticmethod
-    def validate_sku(sku: str) -> bool:
-        """Validate SKU format"""
-        return 1 <= len(sku) <= 50
     
     @staticmethod
     def validate_email(email: str) -> bool:

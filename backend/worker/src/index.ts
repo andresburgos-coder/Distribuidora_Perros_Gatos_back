@@ -3,6 +3,10 @@ import 'reflect-metadata';
 import { connect } from 'amqplib';
 import { consumeEmailMessages } from './consumers/email.consumer';
 import { config } from './config';
+import { consumeInventoryMessages } from './consumers/inventory.consumer';
+import { consumeOrderMessages } from './consumers/order.consumer';
+import { consumeUserRegistrationMessages } from './consumers/user.consumer';
+import { consumeProductCreateMessages } from './consumers/product.consumer';
 import logger from './utils/logger';
 
 async function startWorker() {
@@ -37,6 +41,11 @@ async function startWorker() {
 
     process.on('SIGINT', shutdown);
     process.on('SIGTERM', shutdown);
+    consumeEmailMessages(channel);
+    consumeOrderMessages(channel);
+    consumeInventoryMessages(channel);
+    consumeUserRegistrationMessages(channel);
+    consumeProductCreateMessages(channel);
     
   } catch (error) {
     logger.error('Failed to start worker:', error);

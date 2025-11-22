@@ -113,7 +113,7 @@ class ProductoCreate(BaseModel):
     categoria_id: int
     subcategoria_id: int
     cantidad_disponible: int = Field(default=0, ge=0)
-    sku: Optional[str] = Field(None, max_length=50)
+    # sku removed from create payload per requirements
 
 
 class ProductoUpdate(BaseModel):
@@ -134,12 +134,26 @@ class ProductoResponse(BaseModel):
     precio: float
     peso_gramos: int
     cantidad_disponible: int
-    sku: Optional[str]
+    # sku removed from response
     categoria_id: int
     subcategoria_id: int
     activo: bool
+    categoria: Optional[CategoriaResponse] = None
+    subcategoria: Optional[SubcategoriaResponse] = None
+    imagenes: List[str] = []
     fecha_creacion: datetime
     
+    class Config:
+        from_attributes = True
+
+
+class ProductoImagenResponse(BaseModel):
+    id: int
+    producto_id: int
+    ruta_imagen: str
+    es_principal: bool
+    orden: int
+
     class Config:
         from_attributes = True
 
@@ -239,13 +253,15 @@ class CarruselImagenUpdate(BaseModel):
 class CarruselImagenResponse(BaseModel):
     id: int
     orden: int
-    ruta_imagen: str
+    ruta_imagen: str = Field(..., alias="imagen_url")
     link_url: Optional[str]
     activo: bool
-    fecha_creacion: datetime
-    
+    fecha_creacion: datetime = Field(..., alias="created_at")
+
     class Config:
+        # Allow reading from ORM attributes and populate by field name when needed
         from_attributes = True
+        allow_population_by_field_name = True
 
 
 # User Schemas
