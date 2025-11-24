@@ -12,7 +12,7 @@
 
 ---
 
-## 🎯 Visión General
+## 🎯 Visión General 
 
 La arquitectura del backend de **Distribuidora Perros y Gatos** utiliza un modelo **producer-consumer** con procesamiento asincrónico mediante **RabbitMQ**. 
 
