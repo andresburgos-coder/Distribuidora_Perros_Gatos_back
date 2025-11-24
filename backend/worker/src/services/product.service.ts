@@ -7,7 +7,7 @@ import logger from '../utils/logger';
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, '../../uploads');
 
 export const processProductCreate = async (payload: any) => {
-  const { nombre, descripcion, precio, peso_gramos, categoria_id, subcategoria_id, cantidad_disponible, imagen_filename, imagen_b64 } = payload;
+  const { nombre, descripcion, precio, peso_gramos, categoria_id, subcategoria_id, cantidad_disponible, imagen_filename, imagen_b64, sku } = payload;
 
   const trx = pool;
   try {
@@ -42,7 +42,10 @@ export const processProductCreate = async (payload: any) => {
       throw new Error('Subcategoría no encontrada o no pertenece a la categoría indicada.');
     }
 
-    // Insert product
+    // Ensure SKU exists (some migrations add a unique SKU constraint)
+    const finalSku = (sku && String(sku).trim()) || `SKU-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+
+    // Insert product (include sku to avoid UNIQUE constraint on nullable sku)
     const insertRes = await trx.request()
       .input('nombre', mssql.NVarChar(100), nombre)
       .input('descripcion', mssql.NVarChar(500), descripcion)
@@ -51,9 +54,10 @@ export const processProductCreate = async (payload: any) => {
       .input('cantidad_disponible', mssql.Int, cantidad_disponible || 0)
       .input('categoria_id', mssql.Int, categoria_id)
       .input('subcategoria_id', mssql.Int, subcategoria_id)
-      .query(`INSERT INTO Productos (nombre, descripcion, precio, peso_gramos, cantidad_disponible, categoria_id, subcategoria_id)
+      .input('sku', mssql.NVarChar(50), finalSku)
+      .query(`INSERT INTO Productos (nombre, descripcion, precio, peso_gramos, cantidad_disponible, categoria_id, subcategoria_id, sku)
              OUTPUT INSERTED.id
-             VALUES (@nombre, @descripcion, @precio, @peso_gramos, @cantidad_disponible, @categoria_id, @subcategoria_id)`);
+             VALUES (@nombre, @descripcion, @precio, @peso_gramos, @cantidad_disponible, @categoria_id, @subcategoria_id, @sku)`);
 
     const newId = insertRes.recordset && insertRes.recordset[0] && insertRes.recordset[0].id;
     if (!newId) throw new Error('No se pudo crear el producto.');

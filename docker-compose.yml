@@ -106,7 +106,9 @@ services:
     container_name: distribuidora-db-migrator
     volumes:
       - ./sql:/docker-entrypoint-initdb.d # Mount the entire sql directory
-    command: /bin/bash /docker-entrypoint-initdb.d/init-db.sh
+    # Strip possible CRLF and execute the init script using bash inside the container.
+    # This makes the init robust to Windows-hosted CRLF line endings when bind-mounted.
+    command: ["/bin/bash", "-lc", "if command -v sed >/dev/null 2>&1; then sed -i 's/\r$//' /docker-entrypoint-initdb.d/init-db.sh || true; fi; /bin/bash /docker-entrypoint-initdb.d/init-db.sh"]
     depends_on:
       sqlserver:
         condition: service_healthy

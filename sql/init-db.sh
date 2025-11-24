@@ -1,6 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -euo pipefail
+# Ensure we are running under bash. If invoked with /bin/sh re-exec with bash.
+if [ -z "${BASH_VERSION:-}" ]; then
+    exec /usr/bin/env bash "$0" "$@"
+fi
+
+# Remove possible Windows CRLF characters from this file (safe no-op if not present)
+if command -v sed >/dev/null 2>&1; then
+    sed -i 's/\r$//' "$0" || true
+fi
+
+# Set safe shell options. 'pipefail' is a bash extension; ensure bash before using it.
+if shopt -q >/dev/null 2>&1 || true; then
+    set -euo pipefail
+else
+    set -eu
+fi
+
 set -x # Muestra cada comando ejecutado
 
 DB_SERVER="sqlserver"
