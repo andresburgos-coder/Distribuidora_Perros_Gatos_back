@@ -127,8 +127,8 @@ async def get_user(usuario_id: int, db: Session = Depends(get_db), _admin: Usuar
         result = {
             "id": usuario.id,
             "nombre_completo": usuario.nombre_completo,
-            "cedula": usuario.cedula,
             "email": usuario.email,
+            "cedula": usuario.cedula,
             "telefono": usuario.telefono,
             "direccion_envio": usuario.direccion_envio,
             "preferencia_mascotas": usuario.preferencia_mascotas,

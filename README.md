@@ -353,3 +353,126 @@ MIT License
 ## Support
 
 For issues or questions, please refer to the HU instruction files in `/HU` directory.
+## 📁 Estructura de Carpetas
+
+```
+Distribuidora_Perros_Gatos_back/
+│
+├── HU/                                  # Historias de Usuario - Instrucciones técnicas
+│   ├── INSTRUCTIONS_HU_CREATE_PRODUCT.md
+│   ├── INSTRUCTIONS_HU_MANAGE_CATEGORIES.md
+│   ├── INSTRUCTIONS_HU_MANAGE_INVENTORY.md
+│   ├── INSTRUCTIONS_HU_MANAGE_CAROUSEL.md
+│   ├── INSTRUCTIONS_HU_MANAGE_ORDERS.md
+│   ├── INSTRUCTIONS_HU_MANAGE_USERS.md
+│   ├── INSTRUCTIONS_HU_HOME_PRODUCTS.md
+│   ├── INSTRUCTIONS_HU_REGISTER_USER.md
+│   └── INSTRUCTIONS_HU_LOGIN_USER.md
+│
+├── backend/
+│   │
+│   ├── api/                             # FastAPI Producer
+│   │   ├── main.py                      # Entry point
+│   │   ├── requirements.txt              # Dependencias Python
+│   │   ├── .env.example                 # Variables de entorno
+│   │   │
+│   │   ├── app/
+│   │   │   ├── __init__.py
+│   │   │   ├── config.py                # Configuración (DB, RabbitMQ, etc.)
+│   │   │   ├── models.py                # Modelos Pydantic
+│   │   │   ├── database.py              # Conexión a SQL Server
+│   │   │   │
+│   │   │   ├── routers/                 # Endpoints agrupados por feature
+│   │   │   │   ├── auth.py              # /api/auth/* (register, login, logout, refresh)
+│   │   │   │   ├── admin_categories.py  # /api/admin/categorias/*
+│   │   │   │   ├── admin_products.py    # /api/admin/productos/*
+│   │   │   │   ├── admin_inventory.py   # /api/admin/inventario/*
+│   │   │   │   ├── admin_carousel.py    # /api/admin/carrusel/*
+│   │   │   │   ├── admin_orders.py      # /api/admin/pedidos/*
+│   │   │   │   ├── admin_users.py       # /api/admin/usuarios/*
+│   │   │   │   ├── home_products.py     # /api/home/productos, /api/cart/*
+│   │   │   │   └── health.py            # /health
+│   │   │   │
+│   │   │   ├── services/                # Lógica de negocio
+│   │   │   │   ├── auth_service.py
+│   │   │   │   ├── category_service.py
+│   │   │   │   ├── product_service.py
+│   │   │   │   ├── inventory_service.py
+│   │   │   │   ├── carousel_service.py
+│   │   │   │   ├── order_service.py
+│   │   │   │   ├── user_service.py
+│   │   │   │   └── cart_service.py
+│   │   │   │
+│   │   │   ├── utils/
+│   │   │   │   ├── validators.py        # Validaciones de negocio
+│   │   │   │   ├── security.py          # JWT, bcrypt, etc.
+│   │   │   │   ├── rabbitmq.py          # Cliente RabbitMQ
+│   │   │   │   └── logger.py            # Logging
+│   │   │   │
+│   │   │   └── middleware/
+│   │   │       ├── auth_middleware.py
+│   │   │       └── error_handler.py
+│   │   │
+│   │   └── tests/                       # Tests API (pytest)
+│   │       ├── test_auth.py
+│   │       ├── test_categories.py
+│   │       └── ...
+│   │
+│   └── worker/                          # Node.js Consumer (Express/TypeScript)
+│       ├── src/
+│       │   ├── index.ts                 # Entry point
+│       │   ├── config.ts                # Configuración
+│       │   ├── database.ts              # Conexión SQL Server
+│       │   ├── rabbitmq/
+│       │   │   ├── consumer.ts          # Consumidor RabbitMQ
+│       │   │   └── publisher.ts         # Publicador de mensajes
+│       │   │
+│       │   ├── services/
+│       │   │   ├── email.service.ts     # Envío de emails (email.verification)
+│       │   │   ├── product.service.ts   # Procesar productos.crear
+│       │   │   ├── category.service.ts  # Procesar categorias.crear, actualizar
+│       │   │   ├── inventory.service.ts # Procesar inventario.reabastecer
+│       │   │   ├── carousel.service.ts  # Procesar carrusel.imagen.*
+│       │   │   ├── order.service.ts     # Procesar pedidos.actualizar_estado
+│       │   │   ├── cart.service.ts      # Procesar cart.events (analytics)
+│       │   │   └── auth.service.ts      # Procesar auth.events (auditoría)
+│       │   │
+│       │   ├── jobs/                    # Trabajos scheduled
+│       │   │   ├── cleanup.job.ts       # Limpiar códigos expirados
+│       │   │   └── analytics.job.ts     # Reportes periódicos
+│       │   │
+│       │   └── utils/
+│       │       ├── logger.ts
+│       │       └── helpers.ts
+│       │
+│       ├── package.json
+│       ├── tsconfig.json
+│       ├── .env.example
+│       └── tests/                       # Jest tests
+│           └── ...
+│
+├── uploads/                             # Volumen compartido para archivos
+│   ├── productos/                       # Imágenes de productos
+│   ├── carrusel/                        # Imágenes de carrusel
+│   └── temp/                            # Archivos temporales
+│
+├── sql/                                 # Scripts de base de datos
+│   ├── schema.sql                       # Creación de tablas
+│   ├── migrations/
+│   │   ├── 001_initial_schema.sql
+│   │   ├── 002_add_indexes.sql
+│   │   └── ...
+│   └── seeders/                         # Datos iniciales
+│       ├── categories_seed.sql
+│       └── initial_data.sql
+│
+├── docker-compose.yml                   # Orquestación de servicios
+├── Dockerfile.api                       # Build para FastAPI
+├── Dockerfile.worker                    # Build para Node Worker
+├── .gitignore
+├── ARCHITECTURE.md                      # Este archivo
+└── README.md
+
+```
+
+---
