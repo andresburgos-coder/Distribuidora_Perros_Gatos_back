@@ -18,7 +18,8 @@ class Usuario(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     nombre_completo = Column(String(200), nullable=False)
     email = Column(String(255), unique=True, nullable=False, index=True)
-    cedula = Column(String(50), nullable=False)
+    # Allow 'cedula' to be nullable to match RegisterRequest where cedula is optional
+    cedula = Column(String(50), nullable=True)
     password_hash = Column(String(255), nullable=False)
     es_admin = Column(Boolean, default=False, nullable=False)
     is_active = Column(Boolean, default=False, nullable=False)

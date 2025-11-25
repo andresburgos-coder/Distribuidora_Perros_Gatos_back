@@ -61,6 +61,13 @@ class VerificationCodeRequest(BaseModel):
     email: EmailStr
     code: str = Field(..., pattern=r"^\d{6}$")
 
+    @field_validator('code', mode='before')
+    def normalize_code(cls, v):
+        # Allow frontends that send code as integer or string; coerce to string
+        if v is None:
+            return v
+        return str(v).zfill(6) if isinstance(v, int) else str(v)
+
 
 class ResendCodeRequest(BaseModel):
     """Request schema for resending verification code"""

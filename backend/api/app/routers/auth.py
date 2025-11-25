@@ -175,10 +175,18 @@ async def register(request: RegisterRequest, db: Session = Depends(get_db)):
         }
 
         try:
-            rabbitmq_producer.publish("email.notifications", message, durable=True)
-            logger.info(f"Published verification email message for user {nuevo_usuario.id}, requestId: {request_id}")
+            # Use helper to publish email notification (centralizes retries/logging)
+            from app.utils.rabbitmq import send_email_notification
+            send_email_notification(
+                to_email=request.email,
+                subject=subject,
+                template_name="verification",
+                context=message["context"],
+                request_id=request_id
+            )
+            logger.info(f"Queued verification email for user {nuevo_usuario.id}, requestId: {request_id}")
         except Exception as e:
-            logger.error(f"Failed to publish to RabbitMQ (email.notifications): {str(e)}")
+            logger.error(f"Failed to queue verification email (email.notifications): {str(e)}")
             # Don't fail the registration if RabbitMQ is down; registration still succeeds
         
         # 9. Commit transaction

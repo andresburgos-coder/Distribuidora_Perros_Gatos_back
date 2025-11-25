@@ -3,6 +3,7 @@ Configuration settings for FastAPI application
 Using Pydantic Settings for environment variable management
 """
 from pydantic_settings import BaseSettings
+from urllib.parse import quote_plus
 from typing import List
 
 
@@ -25,7 +26,11 @@ class Settings(BaseSettings):
     @property
     def DATABASE_URL(self) -> str:
         """Construct SQL Server connection string"""
-        return f"mssql+pyodbc://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_SERVER}:{self.DB_PORT}/{self.DB_NAME}?driver=ODBC+Driver+17+for+SQL+Server"
+        # URL-encode user, password and driver to safely handle special characters
+        user = quote_plus(self.DB_USER)
+        password = quote_plus(self.DB_PASSWORD)
+        driver = quote_plus("ODBC Driver 17 for SQL Server")
+        return f"mssql+pyodbc://{user}:{password}@{self.DB_SERVER}:{self.DB_PORT}/{self.DB_NAME}?driver={driver}"
     
     # RabbitMQ
     RABBITMQ_HOST: str = "localhost"

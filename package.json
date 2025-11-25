@@ -1,0 +1,11 @@
+{
+  "name": "distribuidora-back-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root helper scripts for developer convenience",
+  "scripts": {
+    "start": "npm --prefix backend/worker start",
+    "dev": "npm --prefix backend/worker run dev",
+    "build-worker": "npm --prefix backend/worker run build"
+  }
+}
